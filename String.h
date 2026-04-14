@@ -4,18 +4,33 @@
 
 class String {
 public:
-	String( const char *pStr = "" );
+	String( const char pStr = "" );
 	String( const String& rhs );
 	String& operator=( const String& rhs );
 	String( String&& rhs ) noexcept;
 	String& operator=( String&& rhs ) noexcept;
 	~String();
-	// ÀüºÎ default¸¦ »ç¿ëÇÒ ¼ö ÀÖÁö¸¸, StringValueÀÇ ±¸ÇöÀÌ String.cpp¿¡ ÀÖ¾î¼­ String.h¿¡¼± ¼±¾ğÇÑ µÚ String.cpp¿¡¼­ default·Î Á¤ÀÇÇÑ´Ù
+	// ì „ë¶€ defaultë¥¼ ì‚¬ìš©í•  ìˆ˜ ìˆì§€ë§Œ, StringValueì˜ êµ¬í˜„ì´ String.cppì— ìˆì–´ì„œ String.hì—ì„  ì„ ì–¸í•œ ë’¤ String.cppì—ì„œ defaultë¡œ ì •ì˜í•œë‹¤
 
-	const char& operator[]( size_t nIdx ) const;
-	char& operator[]( size_t nIdx );
+	class CharProxy {
+	public:
+		CharProxy( String& rString, int nIdx ) : m_rString( rString ), m_nIdx( nIdx ) {}
+		CharProxy& operator=( char c );
+		CharProxy& operator=( const CharProxy& rhs );
+		char* operator&();
+		const char* operator&() const;
+		operator char&();
+		operator char() const;
+	private:
+		String& m_rString;
+		int m_nIdx;
+	};
+
+	const CharProxy operator[]( int nIdx ) const;
+	CharProxy operator[]( int nIdx );
 
 private:
+	friend class CharProxy;
 	struct StringValue;
 	RCPtr<StringValue> m_pValue;
 };
